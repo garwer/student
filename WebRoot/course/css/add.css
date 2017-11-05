@@ -1,0 +1,95 @@
+/* 重写模态框css */
+.modal-content {
+	top:100%
+}
+
+.modal-footer {
+	text-align:center
+}
+
+.modal-header {
+	border-bottom:0px
+}
+
+.p0 {
+	padding:0px
+}
+
+.source-title {
+	height:30px;
+	line-height:30px;
+	background-color:#3276B1;
+	padding-left:15px;
+	padding-right:5px;
+	font-size:15px;
+	cursor:move;
+	color: #fff;
+}
+
+.source-title .close-image {
+	float: right;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background: url(../images/close.png) center;
+}
+
+.source-content {
+	position:relative;
+	background-color:#fff;
+	background-clip:padding-box;
+	outline:0;
+	-webkit-box-shadow:0 3px 9px rgba(0, 0, 0, .5);
+	box-shadow:0px 3px 9px rgba(0,0,0,0.5);
+}
+
+.addSource-content-table {
+	width: 100%;
+	overflow:scroll; 
+	/* overflow:auto; *//*滚动条*/
+	font-size: 13px;
+	text-align: right;
+	overflow:scroll; 
+	overflow-x: hidden;
+	color: #666666;
+}
+
+/* .tableContent {
+	overflow:auto; 
+	height:230px;
+	overflow-x: hidden;	
+}
+ */
+
+/*表格上下间距*/
+.addSource-content-table tr {
+	height: 45px;
+}
+
+	
+.addSource-content-table input{
+	float: left;
+	width: 95%;
+	height: 28px;
+	line-height: 28px;
+	vertical-align: middle;
+	border:1px solid #C9C9C9;
+}
+
+
+.addSource-content-table textarea {
+	float: left;
+	width:95%;
+	border:1px solid #C9C9C9;
+}
+
+.source-title {
+	height:30px;
+	line-height:30px;
+	background-color:#3276B1;
+	padding-left:15px;
+	padding-right:5px;
+	font-size:15px;
+	cursor:move;
+	color: #fff;
+}

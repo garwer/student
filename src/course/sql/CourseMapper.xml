@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+  <mapper namespace="course.dao.CourseDao">
+ <resultMap type="course.entity.CourseTree" id="CourseTree">
+  </resultMap>
+   <!--加载课题树 -->
+ <select id="findAllCourse" resultType="map">
+ 	 select id,pid,name,open from course_tree
+ </select>
+ 
+ <!-- 根据课题id获取指导老师和课题内容 -->
+<!--  <select id = "findContentById" resultType="">
+ 	 select name from course_tree where id = pid and pid = #{pid}
+ </select> -->
+ 
+ <!-- 根据课题id获取课程名称 教师信息和内容 -->
+ <select id="findContentById" resultType="map">
+	SELECT a.name,
+       a.content,
+       (SELECT t. NAME
+          FROM course_tree t
+         WHERE id = (SELECT pid FROM course_tree t WHERE id = #{id})) as teacher,
+         (select count(*) as isChoose from user_info a JOIN course_tree b where a.choose_pro_id = b.id and id = #{id}) as isChoose
+  FROM course_tree a
+  WHERE a.id = #{id}
+ </select>
+ 
+ <!-- 查看热门课题 -->
+  <select id="findHotCourse" resultType="map">
+	select distinct b.course_id,
+	                c.name,
+	                (select count(*) from collect where course_id = b.course_id) as count
+	  from collect b, course_tree c,user_info d
+	 where b.course_id = c.id 
+	  and d.user_profession_id =
+       (select user_profession_id from user_info where user_id = #{id})
+	 order by count desc limit 10
+ </select>
+ 
+ <!-- 根据专业显示最新课题(首页) -->
+   <select id="findCourseByPro" resultType="map">
+	select distinct a.id,
+	       a.name,
+	       a.content,
+	       a.create_date,
+				 a.ISPARENT,
+	       (select name from course_tree where id = a.pid) as teacher
+	  from course_tree a
+	 inner JOIN user_info b
+	 where a.pid not in
+	       ((select user_profession_id from user_info where user_id = #{id}),
+	        (select pid
+	           from course_tree
+	          where id =
+	                (select user_profession_id from user_info where user_id = #{id})))
+	and a.ISPARENT IS  NULL
+	           order by a.create_date desc limit 10     
+ </select>
+ 
+ <!-- 积分排行 -->
+    <select id="findScoreOrder" resultType="map">
+		select distinct a.user_id,
+                b.user_name,
+                (select SUM(score) from integral where user_id = a.user_id) as count
+  from integral a, user_info b
+ where a.user_id = b.user_id
+   and b.user_profession_id =
+       (select user_profession_id from user_info where user_id = #{id})
+	order by count desc limit 10     
+ </select>
+ 
+ <!-- 判断是否收藏 -->
+ <select id = "isCollect" resultType="int">
+ 	select count(*) from collect where course_id = #{courseId} and user_id = #{userId}
+ </select>
+ 
+ <insert id = "saveCollect" parameterType="course.entity.Collect">
+ 	insert into collect (label_name,user_id,course_id,date) values(#{labelName},#{userId},#{courseId},sysdate());
+ </insert>
+ 
+  <!-- 获取评论-->
+ <select id="getComment" resultType="map">
+	SELECT (@rowNO := @rowNo+1) AS rowId,
+		a.comment_id,
+		a.comment_content,
+		date_format(a.date,'%Y年%c月%d日 %h:%i:%s') as date,
+		b.user_name,
+		c.name,
+		b.photo_adr,
+		(SELECT if(a.user_id=g.user_id, 'yes','no') FROM user_info g where g.user_id = 1) as isSelf
+	FROM
+		user_comment a,
+		user_info b,
+		course_tree c,(select @rowNO :=0) d  
+	WHERE
+		a.user_id = b.user_id
+	AND a.course_id = c.id and  a.course_id = #{courseId}  AND a.type = #{type}
+ </select>
+ 
+ <!-- 添加评论 -->
+  <insert id="saveComment" parameterType="course.entity.Comment">
+   insert into user_comment
+     (comment_content, user_id, course_id, type, date)
+   values
+     (#{commentContent},
+      #{userId},
+      #{courseId},
+      #{type},
+      sysdate()
+     )
+ </insert>
+ 
+ <!-- 删除评论(自己的) -->
+  <delete id="delComment" parameterType="String">
+ 	delete from user_comment where comment_id = #{commentId}
+ </delete>
+ 
+ <!-- 增加积分表 -->
+  <insert id="saveIntegral" parameterType="course.entity.Integral">
+			insert into integral
+	  (type, date, course_id, user_id, score)
+	values
+	  (#{type},
+	   sysdate(),
+	  #{courseId},
+	   #{userId},
+	   (select score from integral_opr where type = #{type} and state = '0SA'))
+	</insert>
+	<!-- 删除收藏 -->
+	<delete id="cancelCollect" parameterType="String">
+ 		delete from collect where course_id = #{courseId}
+ 	</delete>
+ 	
+ 	<!-- 获取我的收藏 -->
+ 	<select id="getMyCollect" resultType="map">
+		 SELECT
+		 	distinct b.course_id,
+			a.user_id,
+			a.user_name,
+			c. name,
+			date_format(b.date,'%Y年%c月%d日 %h:%i:%s') as date,
+			(
+				SELECT
+					Group_concat(label_name)
+				FROM
+					collect
+				WHERE
+					course_id = b.course_id
+					and user_id = #{id}
+			) as label
+		FROM
+			user_info a,
+			collect b,
+			course_tree c
+		WHERE
+			b.course_id = c.id
+		AND a.user_id = b.user_id
+		AND a.user_id = #{id} 
+		limit #{start},#{size}	
+ 	</select>
+ 	
+ 	<!-- 收藏数目 -->
+ 	<select id="getCollectCount" resultType="int">
+ 			 SELECT
+		  count(distinct b.course_id) as count 
+		FROM
+			user_info a,
+			collect b,
+			course_tree c
+		WHERE
+			b.course_id = c.id
+		AND a.user_id = b.user_id
+		AND a.user_id = #{id}
+ 	</select>
+ 	
+ 	<!-- 收藏标签 -->
+ 	 	<select id="getMyLabel" resultType="map">
+		 	SELECT DISTINCT
+		 	label_name,
+			label_id
+		FROM
+			collect
+		WHERE
+			user_id = #{id} 
+			GROUP BY label_name
+ 	</select>
+ 	
+ 	<!-- 积分图表 -->
+ 	<select id="getIntegral" resultType="map">
+	SELECT
+		b.user_name,
+		date_format(a.date,'%Y年%c月%d日 %h:%i:%s') as date,
+		a.score,
+		a.type,
+		case  when a.type = 'comment' then '评论课题'  when a.type = 'collect' then '收藏课题'  when 'study' then '学习课题资料' end  as scoreType,
+		c. name
+	FROM
+		integral a,
+		user_info b,
+		course_tree c
+	WHERE
+		a.user_id = b.user_id
+	AND a.course_id = c.id
+	AND a.user_id = #{id}
+	limit #{start},#{size}	
+ 	</select>
+ 	
+ <!-- 积分 -->
+  <select id="getIntegralCount" resultType="int">
+ 	SELECT
+	count(*) as count
+	FROM
+		integral a,
+		user_info b,
+		course_tree c
+	WHERE
+		a.user_id = b.user_id
+	AND a.course_id = c.id
+	AND a.user_id = #{id}
+ 	</select>
+ 	
+ <!-- 积分详情 -->
+  <select id="getScoreDetail" resultType="map">
+	select 
+		ifnull((select sum(score) from integral where user_id = #{id}),0) as total,
+		ifnull((select sum(score) from integral where type = 'comment' and user_id = #{id}),0) as comment,
+		ifnull((select sum(score) from integral where type = 'collect' and user_id = #{id}),0) as collect,
+		ifnull((select sum(score) from integral where type = 'study' and user_id = #{id}),0) as study
+	from dual 
+ </select>
+ 
+ <!-- 判断是否选择课题 -->
+ <select id="isChoose" resultType="String">
+	select b.name from user_info a,course_tree b where a.choose_pro_id = b.id and a.user_id = #{id}
+ </select>
+ 
+ <!-- 判断是否选择 -->
+ <select id="courseChoose" resultType="int">
+ 	select count(*) as isChoose from user_info a JOIN course_tree b where a.choose_pro_id = b.id and id = #{id}
+ </select>
+ 
+ <!-- 选择课题 -->
+ <update id="sureChoose">
+ 	update user_info set choose_pro_id = #{id} where user_id = #{userId}
+ </update>
+ 
+ <!-- 获取自己的信息 -->
+ <select id="getCenterInfo" resultType="map">
+	select 
+	(select count(distinct a.course_id)  from collect a,integral b where a.user_id = #{id}) as collectNum,
+	(select SUM(b.score) from integral b where  b.user_id = #{id}) as scoreNum,
+	(select a.name from course_tree a,user_info b where b.choose_pro_id = a.id and b.user_id = #{id}) as course,
+	(select a.content from course_tree a,user_info b where b.choose_pro_id = a.id and b.user_id = #{id}) as content,  
+	(select name from course_tree where id = (select a.pid from course_tree a,user_info b where b.choose_pro_id = a.id and b.user_id = #{id})) as teacher  
+	from dual
+ </select>
+ 
+ <!-- 取消选择的课题 -->
+ <update id="cancleCourse">
+	update user_info set choose_pro_id = '' where user_id = #{id}
+ </update>
+ 
+ <!-- 所有学生信息 -->
+    <select id="findAllStudent" resultType="map">
+	SELECT
+			a.*,IFNULL((select name from course_tree b where choose_pro_id = b.id),'无') as choose_course
+		FROM
+			user_info a
+		WHERE
+			a.user_profession_id = (
+				SELECT
+					user_profession_id
+				FROM
+					user_info
+				WHERE
+					user_id = #{id}
+			)
+		AND a.user_type = 'student'  
+		limit #{start},#{size}	    
+ </select>
+ 
+ <!-- 学生数目 -->
+    <select id="allStudentNum" resultType="int">
+		SELECT
+			count(*) as count
+		FROM
+			user_info
+		WHERE
+			user_profession_id = (
+				SELECT
+					user_profession_id
+				FROM
+					user_info
+				WHERE
+					user_id = #{id}
+			)
+		AND user_type = 'student'    
+ </select>
+ 
+ <!-- 所有课程详细信息 -->
+    <select id="findAllCourses" resultType="map">
+	select distinct a.id,
+	       a.name,
+	       a.content,
+	       date_format(a.create_date,'%Y年%c月%d日') as date,	       
+				 a.ISPARENT,
+	       (select name from course_tree where id = a.pid) as teacher
+	  from course_tree a
+	 inner JOIN user_info b
+	 where a.pid not in
+	       ((select user_profession_id from user_info where user_id = #{id}),
+	        (select pid
+	           from course_tree
+	          where id =
+	                (select user_profession_id from user_info where user_id = #{id})))
+	and a.ISPARENT IS  NULL
+	order by a.id desc
+	     limit #{start},#{size}	   
+ </select>
+ 
+ <!-- 课程数目 -->
+  <select id="allCourseNum" resultType="int">
+     select
+		count(distinct a.id) as count 
+	  from course_tree a
+	 inner JOIN user_info b
+	 where a.pid not in
+	       ((select user_profession_id from user_info where user_id = #{id}),
+	        (select pid
+	           from course_tree
+	          where id =
+	                (select user_profession_id from user_info where user_id = #{id})))
+	and a.ISPARENT IS  NULL  
+ </select>
+ 
+ <!-- 获取所有老师信息 老师下拉框-->
+  	<select id="getAllTeacher" resultType="map">
+			SELECT
+		id,
+		NAME
+	FROM
+		course_tree
+	WHERE
+		pid = (
+			SELECT
+				user_profession_id
+			FROM
+				user_info
+			WHERE
+				user_id = #{id}
+		)
+ 	</select>
+ 	
+ <!-- 添加课程 -->
+ <insert id = "insertCourse" parameterType="course.entity.CourseTree">
+	insert into course_tree(id,pid,name,content,state,create_date) values(nextval('seq_test1_num1'),#{pid},#{name},#{content},'0SA',SYSDATE())
+ </insert>
+
+<!-- 添加学生 -->
+  <insert id = "insertStudent" parameterType="course.entity.UserInfo">
+	insert into user_info(user_id,user_password,user_name,user_sex,user_birth,user_profession,user_type,remark,user_profession_id,photo_adr) values(#{user_id},#{user_password},#{user_name},#{user_sex},#{user_birth},'15计算机专业','student','学生','1',#{photo_adr})
+ </insert>
+ 
+ <!-- 教师模块显示所有选择自己课题的学生 -->
+  <select id="findAllMyStudent" resultType="map">
+		SELECT
+			a.*, b. NAME
+		FROM
+			user_info a,
+			course_tree b
+		WHERE
+			a.user_type = 'student'
+		AND a.user_profession_id = '1'
+		AND a.choose_pro_id IN (
+			SELECT
+				id
+			FROM
+				course_tree
+			WHERE
+				pid = #{id}
+		)
+		AND a.choose_pro_id = b.id 
+		limit #{start},#{size}	    
+ </select>
+ <!-- 选择我课题的学生数目 -->
+   <select id="allMyStudentNum" resultType="int">
+		SELECT
+			count(*) as count
+		FROM
+			user_info a,
+			course_tree b
+		WHERE
+			a.user_type = 'student'
+		AND a.user_profession_id = '1'
+		AND a.choose_pro_id IN (
+			SELECT
+				id
+			FROM
+				course_tree
+			WHERE
+				pid = #{id}
+		)
+		AND a.choose_pro_id = b.id  
+ </select>
+ 
+  <!-- 教师模块显示所有自己的课题 -->
+  <select id="findAllMyCourse" resultType="map">
+			SELECT
+		  a.id,
+		  (select name from course_tree where id = a.pid) as teacher,
+			a. name,
+			a.content,
+			date_format(
+				a.create_date,
+				'%Y年%c月%d日'
+			) AS date
+		FROM
+			course_tree a
+		WHERE
+			a.pid = #{id}
+		AND a.state = '0SA' 
+		limit #{start},#{size}	    
+ </select>
+ <!-- 自己课题的数目 -->
+   <select id="allMyCourseNum" resultType="int">
+				SELECT
+		   count(*) as count
+		FROM
+			course_tree a
+		WHERE
+			a.pid = #{id}
+		AND a.state = '0SA'
+	 </select>
+ </mapper>

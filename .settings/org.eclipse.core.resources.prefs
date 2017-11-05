@@ -1,0 +1,17 @@
+eclipse.preferences.version=1
+encoding//WebRoot/course=UTF-8
+encoding//WebRoot/course/MyJsp.jsp=GBK
+encoding//WebRoot/course/addStudent.jsp=UTF-8
+encoding//WebRoot/course/chart.jsp=UTF-8
+encoding//WebRoot/course/coursePage.jsp=UTF-8
+encoding//WebRoot/course/css/common.css=UTF-8
+encoding//WebRoot/course/doc.jsp=GBK
+encoding//WebRoot/course/file.jsp=GBK
+encoding//WebRoot/course/js/bootstrap/bootstrap-table-zh-CN.js=GBK
+encoding//WebRoot/course/js/bootstrap/bootstrap-table.js=UTF-8
+encoding//WebRoot/course/js/common.js=UTF-8
+encoding//WebRoot/course/js/coursePage.js=UTF-8
+encoding//WebRoot/course/js/login.js=UTF-8
+encoding//WebRoot/course/js/myCollect.js=UTF-8
+encoding//WebRoot/course/login.jsp=UTF-8
+encoding//src/course/controller/CourseController.java=UTF-8

@@ -1,0 +1,148 @@
+.textSpan {
+	padding:0 0;
+	text-align:center
+}
+
+
+.releaseNumText1 {
+	font-size:18px;
+	color:#d65a94; /* 紫色 */
+}
+
+.releaseNumText2 {
+	font-size:18px;
+	color:#54BBB0; /* 蓝色 */
+}
+
+.releaseNumText3 {
+	font-size:18px;
+	color:#91D5E4 ; /* 天蓝色 */
+}
+
+.releaseNumText4 {
+	font-size:18px;
+	color:#E1CE33 ; /* 黄色 */
+}
+
+.releaseNumText5 {
+	font-size:18px;
+	color:#9ECB66; /* 绿色 */
+}
+
+.imageBar1 {
+	background-image:url(../images/releaseNum.png) !important;
+}
+
+.imageBar2 {
+	background-image:url(../images/recommended.png) !important;
+}
+
+.imageBar3 {
+	background-image:url(../images/collection.png) !important;
+}
+
+.imageBar4 {
+	background-image:url(../images/visits.png) !important;
+}
+
+.imageBar5 {
+	background-image:url(../images/score.png) !important;
+}
+
+/* span {
+	white-space: nowrap;
+} */
+
+.releaseNum {
+	width:45px;
+	height:45px;
+	cursor:pointer;
+}
+
+a.textCss {
+	font-size:11px;
+	color:#969696;
+	cursor:pointer;
+	width:60px
+}
+
+.p-t-15 {
+	padding-top:15px;
+}
+
+.script-left-div {
+	min-height: 520px;
+	border-left: 1px solid #E6F4D0;
+	border-right: 1px solid #E6F4D0;
+	background: #f8ffeb;
+	padding: 0 0
+}
+
+.script-right-div {
+	height: 400px;
+	padding-top: 20px
+}
+
+.release-btn {
+	background-image:url(../images/releaseScriptBut.png);
+	border:none;
+	float:left;
+	width:122px;
+	height:37px;
+	line-height:37px;
+	font-size:14px;
+	text-align:center;
+	margin-bottom:20px;
+	margin-left:20px;
+	cursor:pointer;
+}
+
+.no-access-log-tip {
+    width: 450px;
+    margin: 30px auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-top: 13%;
+}
+
+.no-access-log-div {
+    width: 161px;
+    height: 158px;
+    background-image: url(../images/no_access_log.png);
+}
+
+.tip-label-div {
+    position: absolute;
+    left: 161px;
+    top: 45px;
+}
+
+.access-log-text3 {
+    font-size: 24px;
+    color: #333333;
+    font-weight: bold;
+}
+
+
+.tip-label-div {
+    position: absolute;
+    left: 161px;
+    top: 45px;
+}
+
+.tip-label {
+    height: 40px;
+    line-height: 40px;
+}
+
+.tip-label2 {
+    height: 25px;
+    line-height: 25px;
+}
+
+.text-color-blue {
+    color: #199ED8;
+}

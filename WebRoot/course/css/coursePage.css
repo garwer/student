@@ -1,0 +1,84 @@
+.container-fluid {
+  margin-right: auto;
+  margin-left: auto;
+/*padding-left: 15px;
+  padding-right: 15px; */
+  height:30px;
+}
+
+body {	
+	background-color: #F2FBE8;
+	margin-top:5px;
+}
+
+.book-bg {
+	background: url("../images/no_access_log.png") no-repeat center 30%;
+}
+
+.course-info {
+	font-size:18px;
+	margin-top:2%;
+	font-family:Microsoft YaHei;
+	font-weight:bold;
+	text-align:left;
+	margin-right:2%
+}
+
+.course-color {
+	/* color:#F2B474; */
+}
+
+.titleInfo {
+	font-weight:normal;
+	margin-left:2%;
+}
+
+.no-access-log-tip {
+    width: 450px;
+    margin: 30px auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-top: 13%;
+}
+
+.no-access-log-div {
+    width: 161px;
+    height: 158px;
+    background-image: url(../images/no_access_log.png);
+}
+
+.tip-label-div {
+    position: absolute;
+    left: 161px;
+    top: 45px;
+}
+
+.access-log-text3 {
+    font-size: 24px;
+    color: #333333;
+    font-weight: bold;
+}
+
+
+.tip-label-div {
+    position: absolute;
+    left: 161px;
+    top: 45px;
+}
+
+.tip-label {
+    height: 40px;
+    line-height: 40px;
+}
+
+.tip-label2 {
+    height: 25px;
+    line-height: 25px;
+}
+
+.text-color-blue {
+    color: #199ED8;
+}

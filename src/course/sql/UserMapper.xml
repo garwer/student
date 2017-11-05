@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ <mapper namespace="course.dao.UserDao">
+ <resultMap type="course.entity.UserInfo" id="UserInfo">
+ </resultMap>
+
+ <!-- 判断账号密码是否存在 -->
+ <select id="findByUserId" parameterType="string" resultType="course.entity.UserInfo">
+ 	 select * from user_info where user_id = #{id} and user_type = #{type}
+ </select>
+ 
+ <!--通过id获取学生资料 -->
+ <select id="findUserById" resultType="map">
+	select a.*,IFNULL((select name from course_tree b where a.choose_pro_id = b.id),'无') as choose_course from user_info a where user_id = #{id}
+ </select>
+
+
+ <insert id="save" parameterType="course.entity.User">
+ 	insert into user(user_tel,user_password,user_name,user_birth,user_sex,user_work)values(
+	#{user_tel},#{user_password},#{user_name},#{user_birth},#{user_sex},#{user_work})
+ </insert>
+ 
+ <select id="findByTel" parameterType="string" resultType="course.entity.User">
+ 	select * from user where user_tel = #{tel}
+ </select>
+ 
+<!-- <resultMap id="StudentResult" type="map">
+    如果数据表的列名和Java类的属性名不一致，则可以这样配置
+    <id property="id" column="id"/>
+    <result property="pid" column="pid"/>
+    <result property="name" column="name"/>
+</resultMap>
+<select id="findAllCourse" resultMap="StudentResult" >
+    SELECT * FROM course_tree
+</select> -->
+ </mapper>
